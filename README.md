@@ -27,3 +27,8 @@ npm run dev
 ```sh
 npm run build
 ```
+### Compile Minify for Production and Preview
+
+```sh
+npm run serve
+```

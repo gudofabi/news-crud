@@ -4,21 +4,25 @@
         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
         </svg>
 
-        <h4>Create News</h4>
+        <h4>{{ isUpdate ? 'Update' : 'Create' }} News</h4>
         <div class="form mt-4">
             <div class="mb-3">
                 <label for="title" class="form-label">Title</label>
                 <input type="text" v-model="form.title" class="form-control" id="title" placeholder="eg: Oil price hike">
-                <div class="j-error" v-for="(error, index) in v$.form.title.$errors" :key="index">{{ error.$message }}</div>
+                <div class="j-error" v-for="(error, index) in v.form.title.$errors" :key="index">{{ error.$message }}</div>
             </div>
             <div class="content mb-3">
                 <label for="content" class="form-label">Content</label>
-                <QuillEditor v-model:content="form.content" 
-                contentType="html" :options="quillOption" />
-                <div class="j-error" v-for="(error, index) in v$.form.content.$errors" :key="index">{{ error.$message }}</div>
+                <textarea v-model="form.content" name="content" id="content" class="form-control" cols="30" rows="10"></textarea>
+                <!-- <QuillEditor v-model:content="form.content" 
+                contentType="html" :options="quillOption" /> -->
+                <div class="j-error" v-for="(error, index) in v.form.content.$errors" :key="index">{{ error.$message }}</div>
             </div>
             <div class="btn-cover">
-                <button @click="func_publish" type="button" class="btn btn-primary">
+                <button v-if="isUpdate" @click="func_update" type="button" class="btn btn-primary">
+                    Update
+                </button>
+                <button v-else @click="func_publish" type="button" class="btn btn-primary">
                     Publish
                 </button>
             </div>
@@ -29,27 +33,32 @@
 </template>
 
 <script>
-import useVuelidate from '@vuelidate/core'
-import { required } from '@vuelidate/validators'
+
 
 import { mapActions } from 'pinia';
 import { useNewsStore } from '../stores/news';
 
 export default {
     props: {
+        isUpdate: {
+            type: Boolean,
+            default: false
+        },  
         show: {
             type: Boolean,
             default: false
+        },
+        v: {
+            type: [Object, Array],
+            default: () => {}
+        },
+        form: {
+            type: [Object, Array],
+            default: () => {}
         }
     },
     data() {
         return {
-            v$: useVuelidate(),
-            form: {
-                title: '',
-                content: '',
-                publish_date: new Date()
-            },
             quillOption: {
                 modules: {
                     toolbar: ['bold', 'italic', 'underline']
@@ -59,29 +68,38 @@ export default {
             }
         }
     },
-    validations () {
-        return {
-            form: {
-                title: { required },
-                content: { required },
-            }
+
+    watch: {
+        form() {
+            return this.from;
         }
-    },
+    },  
+    
     methods: {
-        ...mapActions(useNewsStore, ['publishNews']),
+        ...mapActions(useNewsStore, ['publishNews', 'updateNews']),
 
         func_close() {
             this.$emit('close', false)
         },
 
         async func_publish() {
-            const result = await this.v$.$validate()
+            const result = await this.v.$validate()
             if (!result) {
                 // notify user form is invalid
                 return
             }
             this.publishNews(this.form);
             this.$emit('submit', true);
+        },
+
+        async func_update() {
+            const result = await this.v.$validate()
+            if (!result) {
+                // notify user form is invalid
+                return
+            }
+            this.updateNews(this.form);
+            this.$emit('update', true);
         }
     }
 }
@@ -98,7 +116,7 @@ export default {
     }
     .form-container {
         background-color: white;
-        position: absolute;
+        position: fixed;
         right: 0;
         top: 0;
         width: 100%;

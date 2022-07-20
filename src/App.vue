@@ -1,63 +1,121 @@
 <template>
-  <main>
-    <div class="container">
+  <main class="relative">
+    
+    <div class="wrapper">
+      <div class="container">
 
-      <div class="app-title">
-        <h1 class="mb-0">News CRUD</h1>
-        <button type="button" 
-          @click="showForm = !showForm"
-          class="btn btn-primary d-flex align-items-center"> 
-          <svg xmlns="http://www.w3.org/2000/svg" class="" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-          </svg>
-          Create News
-        </button>
+        <div class="app-title">
+          <h1 class="mb-0">News CRUD</h1>
+          <button type="button" 
+            @click="func_openForm"
+            class="btn btn-primary d-flex align-items-center"> 
+            <svg xmlns="http://www.w3.org/2000/svg" class="" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+            </svg>
+            Create News
+          </button>
+        </div>
+
+        <div class="news-container">
+          <NewsCardComponentVue 
+            :news="getAllNews" 
+            @update="func_edit"
+          />
+        </div>
+
       </div>
-
-      <div class="news-container">
-        <NewsCardComponentVue :news="getAllNews" />
-      </div>
-
     </div>
 
-    <FormComponentVue :show="showForm"
-      @close="func_close"
-      @submit="func_submit"
-     />
+    <FormComponentVue 
+        :show="showForm"
+        :form="form"
+        :v="v$"
+        :is-update="isUpdate"
+        @close="func_close"
+        @submit="func_reload"
+        @update="func_reload"
+      />
   </main>
 </template>
 
 <script>
+import useVuelidate from '@vuelidate/core'
+import { required } from '@vuelidate/validators'
+
 import { mapActions, mapState } from 'pinia';
+import { useNewsStore } from './stores/news';
+
+
 import FormComponentVue from './components/FormComponent.vue';
 import NewsCardComponentVue from './components/NewsCardComponent.vue';
 
-import { useNewsStore } from './stores/news';
 
 export default {
   components: {
     FormComponentVue,
     NewsCardComponentVue
   },
+  
   data() {
     return {
       showForm: false,
+      isUpdate: false,
+      v$: useVuelidate(),
+      form: {
+          title: '',
+          content: '',
+          publish_date: new Date()
+      },
     }
   },
+  
+  validations () {
+      return {
+          form: {
+              title: { required },
+              content: { required },
+          }
+      }
+  },
+
   computed: {
     ...mapState(useNewsStore, ['getAllNews'])
   },
+
   created() {
     this.fetchNews();
   },
+  
   methods: {
+
     ...mapActions(useNewsStore, ['fetchNews']),
 
-    func_submit(value) {
-        console.log(value);
+    func_reload(value) {
         if(value) {
           this.fetchNews();
+          this.showForm = false;
         }
+    },
+
+
+    func_edit(data) {
+      if(data) {
+
+        this.isUpdate = true;
+        this.showForm = true;
+
+        this.form.id = data.id;
+        this.form.title = data.title;
+        this.form.content = data.content;
+        this.form.publish_date = new Date();
+
+      }
+    },
+
+    func_openForm() {
+      this.showForm = !this.showForm;
+      this.isUpdate = false;
+
     },
 
     func_close(val) {
@@ -68,10 +126,14 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
+.wrapper {
+  position: relative;
+  height: 100%;
+  padding-top: 100px;
+  padding-bottom: 200px;
+}
 .container {
   max-width: 900px;
-  margin-top: 100px;
   position: relative;
 
   .app-title {

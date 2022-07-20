@@ -5,21 +5,15 @@ export const useNewsStore = defineStore({
     state: () => ({
         news: [
             {
-                id: 2,
-                title: 'Oil price hike, hit again',
-                content: `
-                    <p>This is gonna be the sample content of the news, please check the content type. This is gonna be the sample content of the news, please check the content type.</p>
-                    <p>This is gonna be the sample content of the news, please check the content type.</p>
-                `,
+                id: 1,
+                title: 'Oil price hike, hit again and again',
+                content: `This is gonna be the sample content of the news, please check the content type. This is gonna be the sample content of the news, please check the content type.`,
                 published_date: new Date()
             },
             {
-                id: 1,
+                id: 0,
                 title: 'Oil price hike, hit again',
-                content: `
-                    <p>This is gonna be the sample content of the news, please check the content type. This is gonna be the sample content of the news, please check the content type.</p>
-                    <p>This is gonna be the sample content of the news, please check the content type. This is gonna be the sample content of the news, please check the content type.This is gonna be the sample content of the news, please check the content type.This is gonna be the sample content of the news, please check the content type.</p>
-                `,
+                content: `This is gonna be the sample content of the news, please check the content type. This is gonna be the sample content of the news, please check the content type.`,
                 published_date: new Date()
             },
         ],
@@ -40,31 +34,38 @@ export const useNewsStore = defineStore({
         },
 
         publishNews(data) {
-            this.loading = true;
+            // this.loading = true;
             // Adding news in array
             let count = this.news.length;
 
             this.news.unshift({
                 id: count+1,
+                published_date: new Date(),
                 ...data
             })
 
         },
 
         updateNews(data) {
-            this.loading = true;
+            // this.loading = true;
             // Update existing news in array
 
+            // console.log(data);
             const index = this.news.findIndex(article => article.id === data.id)
             if (index !== -1) {
-                this.news.splice(index, 1, updTodo)
+                this.news.splice(index, 1, {
+                    id:  data.id,
+                    title:  data.title,
+                    content:  data.content,
+                    published_date: new Date(),
+                })
             }
         },
 
         removeNews(id) {
-            this.loading = true;
+            // this.loading = true;
             // Delete existing news in array by id
-            this.news.filter(article => article.id !== id)
+            this.news = this.news.filter(article => article.id !== id)
         }
     }
 });

@@ -69,49 +69,45 @@ export default {
 
 <style lang="scss" scoped>
 .news {
-      transition: all ease-in-out .3s;
-      position: relative;
-      
+  transition: all ease-in-out .3s;
+  position: relative;
+  
+  &:hover {
+    box-shadow: 0px 4px 8px rgba(0,0,0,.1);
+    transition: all ease-in-out .3s;
+  }
+  .controls {
+    position: absolute;
+    right: 0;
+    top: 0;
+    padding: 10px 20px;
+
+    svg {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      margin: 0px 5px;
+      color: gray;
+
       &:hover {
-        box-shadow: 0px 4px 8px rgba(0,0,0,.1);
-        transition: all ease-in-out .3s;
-      }
-
-      .controls {
-        position: absolute;
-        right: 0;
-        top: 0;
-        padding: 10px 20px;
-
-        svg {
-          width: 20px;
-          height: 20px;
-          cursor: pointer;
-          margin: 0px 5px;
-          color: gray;
-
-          &:hover {
-            color: #000;
-          }
-
-        }
-      }
-
-      .info {
-        .text-secondary {
-          font-size: 14px;
-
-        }
-      }
-
-      .content {
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-        text-overflow: ellipsis;
-
+        color: #000;
       }
     }
+  }
+  .info {
+    .text-secondary {
+      font-size: 14px;
+
+    }
+  }
+  .content {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+  }
+}
 
 </style>

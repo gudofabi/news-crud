@@ -23,8 +23,18 @@ describe('TodoApp.vue Test', () => {
         await wrapper.get('[data-test="new-todo"]').setValue("New Todo"); // input
         await wrapper.get('[data-test="form"]').trigger('submit'); // trigger submit
 
-        expect(wrapper.findAll('[data-test="todo"]')).toHaveLength(2); // what we expect
+        expect(wrapper.findAll('[data-test="todo"]')).length.greaterThan(1) // what we expect
 
     });
+
+    it('Complete a todo', async () => {
+
+        const wrapper = mount(TodoApp);
+
+        await wrapper.get('[data-test="todo-checkbox"]').setValue(true);
+
+        expect(wrapper.get('[data-test="todo"]').classes()).toContain('completed');
+    })
+
 
 })
